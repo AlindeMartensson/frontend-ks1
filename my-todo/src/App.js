@@ -15,7 +15,7 @@ function App() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    addTodo(userInput);
+    addTodos(userInput);
     setUserInput("");
   };
 
@@ -24,19 +24,7 @@ function App() {
     setTodos(data);
   };
 
-  /*
-  function getTodos() {
-    axios
-      .get("http://localhost:4000/todos")
-      .then((res) => {
-        setTodos(res.data);
-      })
-      .catch((error) => {
-        console.log("Error");
-      });
-  }*/
-
-  function addTodo() {
+  function addTodos() {
     const newTodo = {
       id: Math.floor(Math.random() * 10000),
       task: userInput,
@@ -60,7 +48,6 @@ function App() {
       });
   }
 
-  /*
   const deleteTodo = (id) => {
     const url = `http://localhost:4000/todos/${id}`;
     axios
@@ -72,7 +59,22 @@ function App() {
       .catch(function (error) {
         console.error(error);
       });
-  }; */
+  };
+
+  const checkTodo = async (todo) => {
+    const url = `http://localhost:4000/todos/${todo.id}`;
+    console.log(todo);
+
+    await axios
+      .patch(url, { done: !todo.done })
+      .then(function (response) {
+        console.log(response);
+        getTodos();
+      })
+      .catch(function (error) {
+        console.error(error);
+      });
+  };
 
   useEffect(() => {
     getTodos();
@@ -82,7 +84,17 @@ function App() {
     <div className="App">
       <header className="App-header">
         {todos.map((todo) => (
-          <p key={todo.id}>{todo.task}</p>
+          <p key={todo.id}>
+            <p style={{ color: todo.done === true ? "grey" : "white" }}>
+              {todo.task}
+            </p>
+            <button type="button" onClick={() => deleteTodo(todo.id)}>
+              Delete
+            </button>
+            <button type="button" onClick={() => checkTodo(todo)}>
+              Done
+            </button>
+          </p>
         ))}
 
         <form onSubmit={handleSubmit}>
@@ -92,7 +104,7 @@ function App() {
             placeholder="Enter task..."
             onChange={handleChange}
           />
-          <button type="button" onClick={addTodo}>
+          <button type="button" onClick={addTodos}>
             Add todos
           </button>
         </form>
